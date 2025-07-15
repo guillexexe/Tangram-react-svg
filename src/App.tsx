@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import AppRoutes from './routes';
 import { useUserStore } from './stores/userStore'; // Importa tu userStore
 import TangramEditor from './components/TangramEditor';
+import TangramLoader from './components/TangramLoader';
 
 export default function App() {
   const initUserStore = useUserStore(state => state.init);
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <>
       <Header />
+      <TangramLoader/>
       <TangramEditor/>
       <main>
         <AppRoutes /> {/* Aquí se renderizan tus rutas, incluida HomePage */}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { useSprings, animated, to as interp } from '@react-spring/web'
-import './TangramLoader.css' // Asegúrate de que este archivo exista
+import React, { useState, useEffect, useMemo } from 'react'
+import { useSprings, animated, to, config } from '@react-spring/web'
+import './TangramLoader.css'
 
 type Pose = {
   x: number
@@ -10,8 +10,7 @@ type Pose = {
   scaleY?: number
 }
 
-// --- Helper para oscurecer colores ---
-function darkenColor(hex: string, pct: number) {
+function darkenColor(hex: string, pct: number): string {
   const n = (v: number) => Math.min(255, Math.floor(v * (100 - pct) / 100))
   const r = n(parseInt(hex.slice(1, 3), 16))
   const g = n(parseInt(hex.slice(3, 5), 16))
@@ -20,9 +19,8 @@ function darkenColor(hex: string, pct: number) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
 
-// 1) Definición de piezas en coordenadas locales
 const PIECES = [
-  { id: 'lt1', points: '0,0 100,0 0,100',    color: '#ff6347' },
+  { id: 'lt1', points: '0,0 100,0 0,100',     color: '#ff6347' },
   { id: 'lt2', points: '100,0 100,100 0,100', color: '#4682b4' },
   { id: 'mt',  points: '0,0 50,50 0,100',     color: '#32cd32' },
   { id: 'st1', points: '0,0 50,50 0,50',      color: '#ffc0cb' },
@@ -31,7 +29,6 @@ const PIECES = [
   { id: 'pa',  points: '0,0 50,0 100,50 50,50', color: '#ffa500' },
 ]
 
-// 2) Configuración de posiciones para SPREAD y cada figura
 const CONFIG: Record<'SPREAD'|'44'|'152'|'157', Record<string,Pose>> = {
   SPREAD: {
     lt1: { x:   50, y:   50, rotate:   0 },
@@ -58,91 +55,136 @@ const CONFIG: Record<'SPREAD'|'44'|'152'|'157', Record<string,Pose>> = {
     st1: { x: 200, y: 200, rotate:  90 },
     st2: { x: 150, y: 150, rotate:   0 },
     sq:  { x: 200, y: 200, rotate:  45 },
-    pa:  { x: 250, y:  50, rotate:  90 },
+    pa:  { x: 250, y:   50, rotate:  90 },
   },
   '157': {
     lt1: { x: 250, y: 100, rotate:  90 },
     lt2: { x: 250, y: 100, rotate:  90 },
     mt:  { x: 125, y: 300, rotate: 270 },
     st1: { x: 250, y: 100, rotate:   0 },
-    st2: { x: 200, y:  50, rotate:  90 },
+    st2: { x: 200, y:   50, rotate:  90 },
     sq:  { x: 175, y: 200, rotate:   0 },
     pa:  { x: 175, y: 250, rotate:   0 },
   },
 }
 
+const GLOBAL_EXTRUSION_X = 8;
+const GLOBAL_EXTRUSION_Y = 8;
+
 export default function TangramLoader() {
   const [mode, setMode] = useState<'SPREAD'|'44'|'152'|'157'>('SPREAD')
 
-  // Ciclo automático (sin cambios)
-  useEffect(() => {
-    const FIGURE_KEYS = ['44','152','157'] as const
-    const PAUSE = 2000 // ms por figura
+  // Definimos el orden de las figuras a animar automáticamente
+  // Empezamos desde 'SPREAD' y luego pasamos por '44', '152', '157', y volvemos a 'SPREAD'.
+  const autoAnimationSequence: Array<'SPREAD'|'44'|'152'|'157'> = ['44', '152', '157',];
 
-    const cycleOnce = () => {
-      setMode('SPREAD')
-      setTimeout(() => {
-        FIGURE_KEYS.forEach((key, idx) => {
-          setTimeout(() => setMode(key), (idx + 1) * PAUSE)
-        })
-      }, 1000) // Pausa antes de empezar el ciclo de figuras
+  // useEffect para manejar la animación automática
+  useEffect(() => {
+    // Si el modo inicial es 'SPREAD', la primera transición será a la primera figura de autoAnimationSequence.
+    // Si ya estamos en una figura del ciclo automático, mantenemos el orden.
+    let currentSequenceIndex = autoAnimationSequence.indexOf(mode);
+    if (currentSequenceIndex === -1) { // Si el modo actual no está en la secuencia (ej. si comenzamos en SPREAD),
+                                      // lo configuramos para que la siguiente sea la primera de la secuencia.
+      currentSequenceIndex = -1; // Esto hará que la primera transición sea a autoAnimationSequence[0]
     }
 
-    cycleOnce()
-    const iv = setInterval(cycleOnce, (FIGURE_KEYS.length + 2) * PAUSE)
-    return () => clearInterval(iv)
-  }, [])
 
-  // Spring por pieza (sin cambios)
-  const springs = useSprings(
-    PIECES.length,
-    PIECES.map(p => {
-      const { x, y, rotate } = CONFIG[mode][p.id]
+    const interval = setInterval(() => {
+      // Avanza al siguiente modo en la secuencia. El '%' asegura que el índice vuelva a 0 al llegar al final.
+      const nextIndex = (currentSequenceIndex + 1) % autoAnimationSequence.length;
+      setMode(autoAnimationSequence[nextIndex]);
+      currentSequenceIndex = nextIndex; // Actualiza el índice para la próxima iteración
+    }, 4500); // Duración total de cada "escena" (animación + tiempo de pausa), ajusta a tu gusto.
+
+    // Función de limpieza: detiene el intervalo cuando el componente se desmonta
+    return () => clearInterval(interval);
+  }, [mode, autoAnimationSequence]); // Dependencias: re-ejecuta el efecto si 'mode' o la secuencia cambian.
+
+  console.log("Modo actual:", mode);
+
+  const springProps = useMemo(() => {
+    return PIECES.map((p, index) => { // Importante: pasamos 'index' para el delay
+      const { x, y, rotate } = CONFIG[mode][p.id] || { x: 0, y: 0, rotate: 0 }
+      console.log(`Configuración para ${p.id} en modo ${mode}: x=${x}, y=${y}, rotate=${rotate}`);
       return {
         to: { x, y, rotate, scaleX: 1, scaleY: 1 },
-        config: { mass: 1, tension: 170, friction: 26 },
+        // Configuración de la física para una animación más suave
+        config: config.gentle, // Puedes probar 'config.slow' o 'config.stiff'
+        // Añadimos un pequeño retraso a cada pieza para que no empiecen a la vez
+        // Esto reduce la percepción de "colisiones" al escalonar el inicio de la animación
+        delay: index * 100, // Cada pieza empieza 100ms después de la anterior
+                            // Ajusta este valor para controlar el escalonamiento.
       }
     })
-  )
+  }, [mode]) // El useMemo se re-ejecuta cuando el 'mode' cambia
 
-  // Orden de capas (Z-INDEX FALSO)
+  const springs = useSprings(PIECES.length, springProps)
+
   const renderablePieces = PIECES.map((piece, i) => ({
     piece,
     spring: springs[i],
   }))
+  // Ordena las piezas por su posición Y para asegurar un correcto renderizado de profundidad (simulación 3D)
   renderablePieces.sort((a, b) => a.spring.y.get() - b.spring.y.get());
 
   return (
     <div className="loader-container">
-      <svg viewBox="0 0 400 400" className="tangram-svg">
+      <svg viewBox="0 0 400 400" className="tangram-svg" width="400" height="400">
         {/* PASADA 1: Dibujar todas las paredes de extrusión */}
         {renderablePieces.map(({ piece: p, spring: spr }) => {
-          const transform = interp(
-            [spr.x, spr.y, spr.rotate, spr.scaleX, spr.scaleY],
-            (x, y, r, sx, sy) =>
-              `translate3d(${x}px,${y}px,0) rotate(${r}deg) scale(${sx},${sy})`
-          )
+          const { x, y, rotate, scaleX, scaleY } = spr;
+
+          const groupTransform = to(
+            [x, y, rotate, scaleX, scaleY],
+            (xVal, yVal, rVal, sxVal, syVal) => {
+              const transformString = `translate(${xVal},${yVal}) rotate(${rVal}) scale(${sxVal},${syVal})`;
+              return transformString;
+            }
+          );
+
+          const animatedRotateRad = rotate.to(r => r * (Math.PI / 180));
+
           const pts = p.points.split(' ').map(pt => {
             const [X, Y] = pt.split(',').map(Number)
             return { x: X, y: Y }
           })
-          const depth = 8
           const side1 = darkenColor(p.color, 20)
           const side2 = darkenColor(p.color, 40)
+
           return (
-            <animated.g key={`${p.id}-walls`} style={{ transform }}>
+            <animated.g key={`${p.id}-walls`} transform={groupTransform}>
               {pts.map((p1, j) => {
                 const p2 = pts[(j + 1) % pts.length]
-                const wallPts = [
-                  `${p1.x},${p1.y}`,
-                  `${p2.x},${p2.y}`,
-                  `${p2.x + depth},${p2.y + depth}`,
-                  `${p1.x + depth},${p1.y + depth}`,
-                ].join(' ')
+
+                const extrudedP1xLocal = animatedRotateRad.to(r_rad =>
+                  p1.x + (GLOBAL_EXTRUSION_X * Math.cos(-r_rad) - GLOBAL_EXTRUSION_Y * Math.sin(-r_rad))
+                );
+                const extrudedP1yLocal = animatedRotateRad.to(r_rad =>
+                  p1.y + (GLOBAL_EXTRUSION_X * Math.sin(-r_rad) + GLOBAL_EXTRUSION_Y * Math.cos(-r_rad))
+                );
+                const extrudedP2xLocal = animatedRotateRad.to(r_rad =>
+                  p2.x + (GLOBAL_EXTRUSION_X * Math.cos(-r_rad) - GLOBAL_EXTRUSION_Y * Math.sin(-r_rad))
+                );
+                const extrudedP2yLocal = animatedRotateRad.to(r_rad =>
+                  p2.y + (GLOBAL_EXTRUSION_X * Math.sin(-r_rad) + GLOBAL_EXTRUSION_Y * Math.cos(-r_rad))
+                );
+
+                const wallPointsInterpolated = to(
+                    [extrudedP1xLocal, extrudedP1yLocal, extrudedP2xLocal, extrudedP2yLocal],
+                    (p1x_ext_local, p1y_ext_local, p2x_ext_local, p2y_ext_local) => {
+                        return [
+                            `${p1.x},${p1.y}`,
+                            `${p2.x},${p2.y}`,
+                            `${p2x_ext_local},${p2y_ext_local}`,
+                            `${p1x_ext_local},${p1y_ext_local}`,
+                        ].join(' ');
+                    }
+                );
+
                 return (
-                  <polygon
+                  <animated.polygon
                     key={j}
-                    points={wallPts}
+                    points={wallPointsInterpolated}
                     fill={j % 2 ? side2 : side1}
                     stroke="none"
                   />
@@ -154,14 +196,15 @@ export default function TangramLoader() {
 
         {/* PASADA 2: Dibujar todas las caras superiores */}
         {renderablePieces.map(({ piece: p, spring: spr }) => {
-          const transform = interp(
-            [spr.x, spr.y, spr.rotate, spr.scaleX, spr.scaleY],
-            (x, y, r, sx, sy) =>
-              `translate3d(${x}px,${y}px,0) rotate(${r}deg) scale(${sx},${sy})`
+          const { x, y, rotate, scaleX, scaleY } = spr;
+          const transform = to(
+            [x, y, rotate, scaleX, scaleY],
+            (xVal, yVal, rVal, sxVal, syVal) =>
+              `translate(${xVal},${yVal}) rotate(${rVal}) scale(${sxVal},${syVal})`
           )
           const side2 = darkenColor(p.color, 40)
           return (
-            <animated.g key={`${p.id}-top`} style={{ transform }}>
+            <animated.g key={`${p.id}-top`} transform={transform}>
               <polygon
                 points={p.points}
                 fill={p.color}
