@@ -1,0 +1,170 @@
+/* src/components/Header.module.css */
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  /* CAMBIO: Usar variable para el color de fondo del header */
+  background-color: var(--color-background-secondary); /* O primary, según tu diseño */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* CAMBIO: Aplicar variables de tipografía directamente si el header contiene texto */
+  font-family: var(--font-fontFamily);
+  font-size: var(--font-fontSize);
+  color: var(--color-text-primary); /* Color de texto general en el header */
+  transition: background-color 0.3s ease, color 0.3s ease, font-size 0.3s ease; /* Para transiciones suaves */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  /* CAMBIO: Color del texto del logo si es texto, o para los enlaces del logo */
+  color: var(--color-primary); /* O un color específico para tu logo */
+}
+
+.logoImg {
+  /* CAMBIO: Aplicar variables de tamaño de imagen si el logo debe ser afectado por el panel */
+   height: 40px;
+  /*height: var(--img-height); /* Ajusta al alto de imagen del panel */
+  /*width: var(--img-width); /* Ajusta al ancho de imagen del panel */
+  margin-right: 10px;
+  object-fit: contain; /* Para que el logo no se distorsione */
+  transition: height 0.3s ease, width 0.3s ease;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.btn {
+  /* CAMBIO: Usar variables para los colores del botón principal */
+  background-color: var(--color-primary); /* O accent, según su función */
+  color: white; /* Asumiendo que el color de primary/accent es oscuro */
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* CAMBIO: Aplicar variables de tipografía */
+  font-family: var(--font-fontFamily);
+  font-size: var(--font-fontSize);
+}
+
+.btn:hover {
+  /* CAMBIO: Usar una variable más oscura para el hover */
+  background-color: var(--color-primary-dark); /* O accent-dark */
+}
+
+.dropdown {
+  position: relative;
+  margin-left: 1rem;
+  z-index: 100;
+}
+
+.optionsBtn {
+  /* CAMBIO: Usar variables para los colores del botón de opciones */
+  background-color: var(--color-accent); /* O primary, según su función */
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* CAMBIO: Aplicar variables de tipografía */
+  font-family: var(--font-fontFamily);
+  font-size: var(--font-fontSize);
+}
+
+.optionsBtn:hover {
+  /* CAMBIO: Usar una variable más oscura para el hover */
+  background-color: var(--color-accent-dark); /* O primary-dark */
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+  /* CAMBIO: Color de la flecha, si es un SVG o texto */
+  color: white; /* Si es texto, o si el SVG hereda color */
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  /* CAMBIO: Usar variables para los colores del menú desplegable */
+  background-color: var(--color-background-primary); /* Fondo del menú */
+  border: 1px solid var(--color-border); /* Borde del menú */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0.5rem 0 0;
+  min-width: 180px;
+  z-index: 101;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+}
+
+.dropdown.open .dropdownMenu {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+
+.dropdownMenu li {
+  padding: 0;
+}
+
+.dropdownMenu a,
+.dropdownBtn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  /* CAMBIO: Usar variables para los colores de texto de los ítems del menú */
+  color: var(--color-text-primary); /* Color de texto normal */
+  /* CAMBIO: Aplicar variables de tipografía */
+  font-family: var(--font-fontFamily);
+  font-size: var(--font-fontSize);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdownMenu a:hover,
+.dropdownBtn:hover {
+  /* CAMBIO: Usar una variable para el fondo al pasar el ratón */
+  background-color: var(--color-background-secondary); /* Un color secundario más claro/oscuro */
+  color: var(--color-primary); /* O un color de acento */
+}
+
+/* Estilos para el botón de cerrar sesión */
+.dropdownBtn.logout {
+  /* CAMBIO: Usar variables para el color de logout */
+  color: var(--color-accent); /* Podrías definir una '--color-warning' */
+}
+
+.dropdownBtn.logout:hover {
+  /* CAMBIO: Usar variables para el fondo de hover de logout */
+  background-color: var(--color-background-secondary); /* O un color más suave como #fcecec */
+  color: var(--color-accent-dark); /* O un rojo más oscuro */
+}
+  

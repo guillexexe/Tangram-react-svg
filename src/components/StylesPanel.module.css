@@ -1,0 +1,114 @@
+/* src/components/StylesPanel.module.css */
+
+.stylesPanel {
+  padding: 2rem 1rem;
+}
+
+.configPreviewWrapper {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.configPanel,
+.previewPanel {
+  flex: 1 1 300px;
+  min-width: 250px;
+}
+
+.paletteList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.paletteCard {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: var(--color-secondary);
+  color: var(--color-accent);
+}
+
+.paletteCard.active {
+  box-shadow: 0 0 0 3px var(--color-accent);
+}
+
+.swatches {
+  display: flex;
+  gap: 4px;
+  margin: 0.5rem 0;
+}
+
+.swatch {
+  flex: 1;
+  height: 24px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.newPalette {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  grid-template-rows: auto auto;
+  gap: 0.5rem;
+}
+
+.newPalette button {
+  grid-column: 1 / -1;
+}
+
+.typoControls,
+.imgControls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.cbMode {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.previewContainer {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.daltonism {
+  filter: grayscale(100%) contrast(1.2);
+}
+
+@media (max-width: 768px) {
+  .configPreviewWrapper {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .newPalette {
+    grid-template-columns: 1fr;
+  }
+  .typoControls,
+  .imgControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 400px) {
+  .actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,63 @@
+/* src/components/ServiceSection.module.css */
+
+.services {
+  padding: 4rem 1rem;
+  /* CAMBIO: Usar una variable para el fondo de la sección de servicios */
+  background: var(--color-background-secondary); /* O primary, dependiendo de tu diseño */
+  transition: background 0.3s ease; /* Transición suave */
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  /* CAMBIO: Usar una variable para el fondo de las tarjetas de servicio */
+  background: var(--color-background-primary); /* O secondary, si es un color diferente */
+  width: 240px;
+  padding: 2rem 1rem;
+  border-radius: 8px;
+  text-align: center;
+  /* CAMBIO: Usar variables para la sombra de la tarjeta */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Esto puede ser una sombra fija o una variable si quieres controlarla */
+  /* Si quieres una variable para la sombra:
+     --shadow-color: rgba(0,0,0,0.1);
+     box-shadow: 0 4px 12px var(--shadow-color);
+  */
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  /* CAMBIO: Usar variables para la sombra en hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Mismo comentario que arriba para las sombras */
+}
+
+.card h3 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.25rem;
+  /* CAMBIO: Usar variable para el color del título de la tarjeta */
+  color: var(--color-text-primary); /* O un color de acento si son títulos importantes */
+  /* CAMBIO: Usar variables de tipografía si quieres que los h3 se vean afectados */
+  font-family: var(--font-heading-fontFamily, var(--font-fontFamily)); /* Primero headingFontFamily, luego fontFamily */
+}
+
+.card p {
+  /* CAMBIO: Usar variable para el color del texto de la tarjeta */
+  color: var(--color-text-secondary); /* Un color de texto secundario */
+  font-size: 0.95rem;
+  line-height: var(--font-lineHeight, 1.4); /* O la variable de interlineado */
+  /* CAMBIO: Usar variables de tipografía si quieres que los p se vean afectados */
+  font-family: var(--font-fontFamily);
+}
+
+/* Opcional: Estilo para los iconos si son parte de la tarjeta y quieres que sus colores sean dinámicos */
+.card .icon { /* Asumiendo que tus iconos tienen una clase 'icon' */
+  color: var(--color-primary); /* O accent, según tu diseño */
+  font-size: 3rem; /* O el tamaño que uses */
+}

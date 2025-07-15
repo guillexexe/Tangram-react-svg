@@ -1,0 +1,83 @@
+/* --- Contenedor Principal y Pieza Base --- */
+.tangram-container {
+  width: 800px; /* Aumenta el ancho para que quepan las piezas una al lado de otra */
+  min-height: 400px; /* Ocupa el espacio necesario para las piezas apiladas verticalmente */
+  border: 1px solid #ccc;
+  /* position: relative;  No es estrictamente necesario si solo contiene divs en flujo normal */
+  perspective: 1000px; /* Perspectiva del "escenario" 3D */
+  transform-style: preserve-3d; /* Permite que los elementos anidados participen en la escena 3D */
+  margin: 20px;
+  background-color: #f0f0f0;
+  /* overflow: hidden; Ya no es tan necesario si las piezas no se superponen */
+
+  /* Podemos usar flexbox para que se organicen automáticamente */
+  display: flex;
+  flex-wrap: wrap; /* Permite que las piezas pasen a la siguiente línea */
+  gap: 20px; /* Espacio entre las piezas */
+  justify-content: center; /* Centra las piezas horizontalmente */
+  align-items: flex-start; /* Alinea las piezas en la parte superior */
+}
+
+.tangram-piece {
+  /* position: absolute;  <--- ELIMINADO para que las piezas se organicen en flujo normal */
+  /* top: 0; left: 0;     <--- ELIMINADO */
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  border: none;
+  box-shadow: none;
+  /* margin-bottom: 20px; /* Espacio entre piezas */
+  /* display: inline-block; /* O si no usamos flexbox, para que las piezas se pongan en línea */
+}
+
+/* --- Estilos para las Caras Individuales (Base para todas) --- */
+.tangram-piece .face {
+  position: absolute; /* MANTENER ABSOLUTE AQUÍ, es CRÍTICO para el 3D */
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  backface-visibility: hidden;
+  box-sizing: border-box;
+  transform-origin: center center;
+}
+
+/* Resto del CSS (para cube, triangular-prism-large, 2d) se mantiene igual */
+
+/* --- ESTILOS ESPECÍFICOS PARA EL CUBO (pieza 'sq') --- */
+.tangram-cube .face {
+    width: 100%;
+    height: 100%;
+}
+
+/* --- ESTILOS ESPECÍFICOS PARA EL PRISMA TRIANGULAR GRANDE (piezas 'lt1', 'lt2') --- */
+.tangram-triangular-prism-large .face.front-base,
+.tangram-triangular-prism-large .face.back-base {
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
+}
+
+
+/* --- ESTILOS PARA LAS PIEZAS 2D (con su clip-path) --- */
+.tangram-2d .face.front-2d {
+  position: absolute; /* MANTENER ABSOLUTE AQUÍ, para que ocupe todo el espacio del contenedor de la pieza */
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: inherit;
+}
+
+/* Clip-paths para las formas 2D planas */
+.tangram-2d#mt .face.front-2d {
+  clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
+}
+
+.tangram-2d#st1 .face.front-2d,
+.tangram-2d#st2 .face.front-2d {
+  clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
+}
+
+.tangram-2d#pa .face.front-2d {
+  clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+}

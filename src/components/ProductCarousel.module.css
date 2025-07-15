@@ -1,0 +1,113 @@
+/* src/components/ProductCarousel.module.css */
+
+.carouselContainer {
+  position: relative;
+  width: 90%; /* This is a good starting point, adjust as needed */
+  max-width: 1200px; /* Add a max-width to prevent it from getting too wide on large screens */
+  margin: 0 auto; /* Centra el contenedor del carrusel */
+  overflow: hidden; /* **CRÍTICO:** Oculta los slides que están fuera de vista */
+  padding: 20px 0; /* Add some vertical padding around the carousel content */
+  /* min-height: 350px; /* Optional: Give it a minimum height to avoid layout shifts if content loads slowly */
+}
+
+.carousel {
+  display: flex;
+  transition: transform 0.5s ease; /* Ensure a default transition, JS can override */
+  /* No need for width: 100% here as flex items will size themselves */
+}
+
+.slide {
+  flex-shrink: 0; /* **CRÍTICO:** Evita que los slides se encojan */
+  flex-basis: calc(100% / var(--items-to-show, 1)); /* More robust than 'flex' shorthand */
+  padding: 0.5rem;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex; /* Use flexbox to align content within each slide */
+  flex-direction: column; /* Stack image, h3, p vertically */
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+}
+
+.slide img {
+  width: 100%;
+  height: 200px; /* Fixed height for consistency, `object-fit` will handle aspect ratio */
+  object-fit: cover; /* Recorta la imagen para llenar el espacio sin distorsionar */
+  border-radius: 8px;
+  margin: 0 auto 10px auto; /* Add margin-bottom for spacing below image */
+}
+
+.slide h3 {
+  margin: 0.5rem 0 0.25rem;
+  color: var(--color-accent, #333);
+  white-space: nowrap; /* Prevents title from wrapping unless explicitly allowed */
+  overflow: hidden; /* Hide overflow if text is too long */
+  text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+}
+
+.slide p {
+  margin: 0;
+  color: var(--color-accent, #e67e22);
+  font-weight: bold;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: var(--color-secondary, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--color-accent, #ddd);
+  color: var(--color-accent, #333);
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 50%;
+  /* Added styles to ensure content (the arrow) is centered */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effects */
+}
+
+.nav:hover {
+  background-color: var(--color-accent, #e67e22);
+  color: white;
+}
+
+.prev {
+  left: 10px; /* Change to positive value to keep it inside the container */
+}
+
+.next {
+  right: 10px; /* Change to positive value to keep it inside the container */
+}
+
+.dots {
+  display: flex; /* Use flexbox to center dots */
+  justify-content: center;
+  margin-top: 20px; /* Space above dots */
+  position: relative; /* Make sure dots are within normal flow, not absolutely positioned if not needed */
+  /* If you want them strictly at the bottom of the container, then keep absolute positioning and adjust bottom */
+  /* For now, removing absolute positioning makes them flow below the carousel */
+  /* bottom: 10px; Removed for now */
+  /* left: 0; Removed for now */
+  /* right: 0; Removed for now */
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  background: #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dot.active {
+  background: var(--color-accent, #333);
+}

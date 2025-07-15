@@ -1,0 +1,49 @@
+/* src/index.css */
+
+:root {
+  /* ... tus variables existentes (primary, secondary, accent, font, img) ... */
+
+  /* Nuevas variables de color */
+  --color-background-primary: #242424; /* O tu color de fondo actual */
+  --color-background-secondary: #1a1a1a; /* O el color de fondo de tus cards/header */
+  --color-text-primary: rgba(255, 255, 255, 0.87); /* Tu color de texto principal */
+  --color-text-secondary: #888; /* Tu color de texto secundario (read-the-docs) */
+  --color-border: #444444; /* Un color de borde neutro */
+
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545; /* Para el botón de logout */
+
+  /* Nuevas variables de tipografía (si las usas) */
+  --font-heading-fontFamily: var(--font-fontFamily); /* Por defecto igual al principal */
+  --font-button-fontSize: 1em; /* Por defecto igual al base o 1em */
+  --font-lineHeight: 1.5;
+
+  /* ... el resto de tu CSS global que usa estas variables ... */
+}
+
+/* Asegúrate de que los elementos usen estas variables: */
+body {
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  line-height: var(--font-lineHeight);
+}
+
+.read-the-docs {
+  color: var(--color-text-secondary);
+}
+
+/* Ejemplo para usar el color de peligro en el botón de logout */
+.dropdownBtn.logout {
+  color: var(--color-danger);
+}
+.dropdownBtn.logout:hover {
+  background-color: rgba(var(--color-danger), 0.1); /* Hover suave */
+}
+
+/* Botones genéricos también pueden usar más variables */
+button {
+    background-color: var(--color-background-secondary); /* Fondo de botón por defecto */
+    color: var(--color-text-primary); /* Color de texto en botones */
+    border: 1px solid var(--color-border); /* Borde de botones */
+}

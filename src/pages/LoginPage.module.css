@@ -1,0 +1,75 @@
+.authPage {
+  max-width: 300px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.authPage h2 {
+  margin-bottom: 1rem;
+  color: var(--color-accent);
+}
+
+.authPage form {
+  display: flex;
+  flex-direction: column;
+}
+
+.authPage input {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.authPage input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.authPage button {
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.authPage button:hover {
+  background: var(--accent-hover);
+}
+.authPage {
+  position: relative;
+  padding: 2rem;
+  max-width: 400px;
+  margin: 100px auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.overlay {
+  position: fixed;
+  top:    0;
+  left:   0;
+  right:  0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.loaderPopup {
+  position: fixed;
+  top:     50%;
+  left:    50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding:     1.5rem;
+  border-radius: 8px;
+  box-shadow:   0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+}

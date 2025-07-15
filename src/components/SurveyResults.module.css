@@ -1,0 +1,41 @@
+/* src/components/SurveyResults.module.css */
+
+.results {
+  max-width: 600px;
+  margin: 1rem auto;
+  font-family: sans-serif;
+}
+
+.block {
+  border: 1px solid #ddd;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.block h3 {
+  margin-top: 0;
+}
+
+.loading {
+  color: #888;
+  text-align: center;
+}
+
+.actions {
+  text-align: right;
+}
+
+.actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #2196f3;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.actions button:hover {
+  background: #1976d2;
+}

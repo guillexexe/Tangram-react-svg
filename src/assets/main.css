@@ -1,0 +1,36 @@
+:root {
+  --color-primary: #ffffff;
+  --color-secondary: #2980b9;
+  --color-accent: #2c3e50;
+  --color-primary-text: #333333;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  color: var(--color-primary-text);
+  background: var(--color-primary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+/* Daltonism Accessibility Mode */
+.daltonism {
+  filter: grayscale(100%) contrast(1.2);
+}
