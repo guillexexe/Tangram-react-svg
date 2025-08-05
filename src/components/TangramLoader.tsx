@@ -73,50 +73,36 @@ const GLOBAL_EXTRUSION_Y = 8;
 
 export default function TangramLoader() {
   const [mode, setMode] = useState<'SPREAD'|'44'|'152'|'157'>('SPREAD')
+  const autoAnimationSequence: Array<'SPREAD'|'44'|'152'|'157'> = ['44', '152', '157', 'SPREAD'];
 
-  // Definimos el orden de las figuras a animar automáticamente
-  // Empezamos desde 'SPREAD' y luego pasamos por '44', '152', '157', y volvemos a 'SPREAD'.
-  const autoAnimationSequence: Array<'SPREAD'|'44'|'152'|'157'> = ['44', '152', '157',];
-
-  // useEffect para manejar la animación automática
   useEffect(() => {
-    // Si el modo inicial es 'SPREAD', la primera transición será a la primera figura de autoAnimationSequence.
-    // Si ya estamos en una figura del ciclo automático, mantenemos el orden.
     let currentSequenceIndex = autoAnimationSequence.indexOf(mode);
-    if (currentSequenceIndex === -1) { // Si el modo actual no está en la secuencia (ej. si comenzamos en SPREAD),
-                                      // lo configuramos para que la siguiente sea la primera de la secuencia.
-      currentSequenceIndex = -1; // Esto hará que la primera transición sea a autoAnimationSequence[0]
+    if (currentSequenceIndex === -1) {
+      currentSequenceIndex = -1;
     }
 
-
     const interval = setInterval(() => {
-      // Avanza al siguiente modo en la secuencia. El '%' asegura que el índice vuelva a 0 al llegar al final.
       const nextIndex = (currentSequenceIndex + 1) % autoAnimationSequence.length;
       setMode(autoAnimationSequence[nextIndex]);
-      currentSequenceIndex = nextIndex; // Actualiza el índice para la próxima iteración
-    }, 4500); // Duración total de cada "escena" (animación + tiempo de pausa), ajusta a tu gusto.
+      currentSequenceIndex = nextIndex;
+    }, 4500);
 
-    // Función de limpieza: detiene el intervalo cuando el componente se desmonta
     return () => clearInterval(interval);
-  }, [mode, autoAnimationSequence]); // Dependencias: re-ejecuta el efecto si 'mode' o la secuencia cambian.
+  }, [mode, autoAnimationSequence]);
 
   console.log("Modo actual:", mode);
 
   const springProps = useMemo(() => {
-    return PIECES.map((p, index) => { // Importante: pasamos 'index' para el delay
+    return PIECES.map((p, index) => {
       const { x, y, rotate } = CONFIG[mode][p.id] || { x: 0, y: 0, rotate: 0 }
       console.log(`Configuración para ${p.id} en modo ${mode}: x=${x}, y=${y}, rotate=${rotate}`);
       return {
         to: { x, y, rotate, scaleX: 1, scaleY: 1 },
-        // Configuración de la física para una animación más suave
-        config: config.gentle, // Puedes probar 'config.slow' o 'config.stiff'
-        // Añadimos un pequeño retraso a cada pieza para que no empiecen a la vez
-        // Esto reduce la percepción de "colisiones" al escalonar el inicio de la animación
-        delay: index * 100, // Cada pieza empieza 100ms después de la anterior
-                            // Ajusta este valor para controlar el escalonamiento.
+        config: config.gentle,
+        delay: index * 100,
       }
     })
-  }, [mode]) // El useMemo se re-ejecuta cuando el 'mode' cambia
+  }, [mode])
 
   const springs = useSprings(PIECES.length, springProps)
 
@@ -125,12 +111,62 @@ export default function TangramLoader() {
     spring: springs[i],
   }))
   // Ordena las piezas por su posición Y para asegurar un correcto renderizado de profundidad (simulación 3D)
+  // Las piezas con menor Y se dibujan primero (más atrás), las con mayor Y se dibujan después (más adelante).
   renderablePieces.sort((a, b) => a.spring.y.get() - b.spring.y.get());
 
   return (
     <div className="loader-container">
       <svg viewBox="0 0 400 400" className="tangram-svg" width="400" height="400">
-        {/* PASADA 1: Dibujar todas las paredes de extrusión */}
+
+        {/* PASADA 1: Dibujar TODAS las caras inferiores (las más oscuras y traseras) */}
+        {renderablePieces.map(({ piece: p, spring: spr }) => {
+          const { x, y, rotate, scaleX, scaleY } = spr;
+
+          // La transformación para la cara inferior es la misma que para el grupo general,
+          // pero los puntos se dibujarán con offset de extrusión.
+          const groupTransform = to(
+            [x, y, rotate, scaleX, scaleY],
+            (xVal, yVal, rVal, sxVal, syVal) => {
+              const transformString = `translate(${xVal},${yVal}) rotate(${rVal}) scale(${sxVal},${syVal})`;
+              return transformString;
+            }
+          );
+
+          const animatedRotateRad = rotate.to(r => r * (Math.PI / 180));
+
+          const pts = p.points.split(' ').map(pt => {
+            const [X, Y] = pt.split(',').map(Number)
+            return { x: X, y: Y }
+          });
+
+          // Calcula los puntos de la cara inferior, extruidos
+          const extrudedPointsInterpolated = to(
+            [animatedRotateRad], // La rotación afecta la dirección de la extrusión
+            (r_rad) => {
+              const transformedPts = pts.map(pt => {
+                // Aplica la extrusión local (desplazamiento) para cada punto de la cara
+                const newX = pt.x + (GLOBAL_EXTRUSION_X * Math.cos(-r_rad) - GLOBAL_EXTRUSION_Y * Math.sin(-r_rad));
+                const newY = pt.y + (GLOBAL_EXTRUSION_X * Math.sin(-r_rad) + GLOBAL_EXTRUSION_Y * Math.cos(-r_rad));
+                return `${newX},${newY}`;
+              });
+              return transformedPts.join(' ');
+            }
+          );
+
+          const bottomFaceColor = darkenColor(p.color, 60); // Mucho más oscuro para la base
+
+          return (
+            <animated.g key={`${p.id}-bottom`} transform={groupTransform}>
+              <animated.polygon
+                points={extrudedPointsInterpolated} // Puntos extruidos para la base
+                fill={bottomFaceColor}
+                stroke="none" // No necesita borde visible
+              />
+            </animated.g>
+          );
+        })}
+
+        {/* PASADA 2: Dibujar todas las paredes de extrusión (medianas) */}
         {renderablePieces.map(({ piece: p, spring: spr }) => {
           const { x, y, rotate, scaleX, scaleY } = spr;
 
@@ -149,13 +185,14 @@ export default function TangramLoader() {
             return { x: X, y: Y }
           })
           const side1 = darkenColor(p.color, 20)
-          const side2 = darkenColor(p.color, 40)
+          const side2 = darkenColor(p.color, 40) // Color para las paredes
 
           return (
             <animated.g key={`${p.id}-walls`} transform={groupTransform}>
               {pts.map((p1, j) => {
                 const p2 = pts[(j + 1) % pts.length]
 
+                // Calcula las coordenadas extruidas (profundidad 3D) para p1 y p2
                 const extrudedP1xLocal = animatedRotateRad.to(r_rad =>
                   p1.x + (GLOBAL_EXTRUSION_X * Math.cos(-r_rad) - GLOBAL_EXTRUSION_Y * Math.sin(-r_rad))
                 );
@@ -173,10 +210,10 @@ export default function TangramLoader() {
                     [extrudedP1xLocal, extrudedP1yLocal, extrudedP2xLocal, extrudedP2yLocal],
                     (p1x_ext_local, p1y_ext_local, p2x_ext_local, p2y_ext_local) => {
                         return [
-                            `${p1.x},${p1.y}`,
-                            `${p2.x},${p2.y}`,
-                            `${p2x_ext_local},${p2y_ext_local}`,
-                            `${p1x_ext_local},${p1y_ext_local}`,
+                            `${p1.x},${p1.y}`,          // Punto 1 de la cara superior (original de la pieza)
+                            `${p2.x},${p2.y}`,          // Punto 2 de la cara superior (original de la pieza)
+                            `${p2x_ext_local},${p2y_ext_local}`,    // Punto 2 de la base de la pared (extruido, local)
+                            `${p1x_ext_local},${p1y_ext_local}`,    // Punto 1 de la base de la pared (extruido, local)
                         ].join(' ');
                     }
                 );
@@ -185,7 +222,7 @@ export default function TangramLoader() {
                   <animated.polygon
                     key={j}
                     points={wallPointsInterpolated}
-                    fill={j % 2 ? side2 : side1}
+                    fill={j % 2 ? side2 : side1} // Alterna colores para dar la sensación de volumen en las paredes
                     stroke="none"
                   />
                 )
@@ -194,7 +231,7 @@ export default function TangramLoader() {
           )
         })}
 
-        {/* PASADA 2: Dibujar todas las caras superiores */}
+        {/* PASADA 3: Dibujar todas las caras superiores (las más claras y frontales) */}
         {renderablePieces.map(({ piece: p, spring: spr }) => {
           const { x, y, rotate, scaleX, scaleY } = spr;
           const transform = to(
@@ -202,13 +239,13 @@ export default function TangramLoader() {
             (xVal, yVal, rVal, sxVal, syVal) =>
               `translate(${xVal},${yVal}) rotate(${rVal}) scale(${sxVal},${syVal})`
           )
-          const side2 = darkenColor(p.color, 40)
+          const side2 = darkenColor(p.color, 40) // Color para el borde de la cara superior
           return (
             <animated.g key={`${p.id}-top`} transform={transform}>
               <polygon
-                points={p.points}
+                points={p.points} // Los puntos de la cara superior son los originales de la pieza
                 fill={p.color}
-                stroke={side2}
+                stroke={side2} // El borde puede ser más oscuro que el relleno para definirlo
                 strokeWidth="0.5"
               />
             </animated.g>

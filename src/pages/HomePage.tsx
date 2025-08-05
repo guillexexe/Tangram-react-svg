@@ -3,6 +3,8 @@
 import React from 'react'
 import Banner from '../components/Banner'
 import ServiceSection, { Service } from '../components/ServiceSection' // Importa Service interface
+import ImageCarousel from '../components/ImageCarousel/ImageCarousel';
+import VideoCarousel from '../components/VideoCarousel/VideoCarousel';
 import ProductCarousel from '../components/ProductCarousel'
 import ContactForm from '../components/ContactForm';
 import styles from './HomePage.module.css'
@@ -36,9 +38,20 @@ export default function HomePage() {
   return (
     <div className={styles.homePage}>
       <Banner />
-      <ServiceSection services={services} /> {/* Esto ahora debería renderizar las cards */}
+      <ServiceSection services={services} />
+      
+      {/* Carrusel de Productos Existente */}
       <ProductCarousel items={featuredProducts} />
-      <ContactForm /> 
+      
+      {/* Nuevo Carrusel de Imágenes Editables */}
+      <section className={styles.section}>
+        <h2>Personaliza tus Zapatos</h2>
+        <ImageCarousel />
+      </section>
+
+      <VideoCarousel />
+
+      <ContactForm />
     </div>
-  )
+  );
 }

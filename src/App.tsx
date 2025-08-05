@@ -4,7 +4,6 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import AppRoutes from './routes';
 import { useUserStore } from './stores/userStore'; // Importa tu userStore
-import TangramEditor from './components/TangramEditor';
 import TangramLoader from './components/TangramLoader';
 
 export default function App() {
@@ -31,8 +30,6 @@ export default function App() {
   return (
     <>
       <Header />
-      <TangramLoader/>
-      <TangramEditor/>
       <main>
         <AppRoutes /> {/* Aquí se renderizan tus rutas, incluida HomePage */}
       </main>
