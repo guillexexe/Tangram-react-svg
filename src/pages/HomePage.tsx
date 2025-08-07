@@ -4,7 +4,7 @@ import React from 'react'
 import Banner from '../components/Banner'
 import ServiceSection, { Service } from '../components/ServiceSection' // Importa Service interface
 import ImageCarousel from '../components/ImageCarousel/ImageCarousel';
-import VideoCarousel from '../components/VideoCarousel/VideoCarousel';
+import VideoCarousel from '../components/VideoGallery/Videocarousel';
 import ProductCarousel from '../components/ProductCarousel'
 import ContactForm from '../components/ContactForm';
 import styles from './HomePage.module.css'

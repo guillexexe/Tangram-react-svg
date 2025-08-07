@@ -1,0 +1,17 @@
+WEBVTT
+
+1
+00:00:02.000 --> 00:00:05.500
+Hello everyone! This is a demonstration video
+to show how subtitles work.
+
+2
+00:00:06.000 --> 00:00:10.250
+It is important that each subtitle has
+an identifier, a time range,
+and the text to display.
+
+3
+00:00:11.000 --> 00:00:15.000
+And remember, .vtt files
+are the standard way to do it on the web.

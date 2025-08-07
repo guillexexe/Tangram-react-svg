@@ -1,0 +1,17 @@
+WEBVTT
+
+1
+00:00:02.000 --> 00:00:05.500
+¡Hola a todos! Este es un video de demostración
+para mostrar cómo funcionan los subtítulos.
+
+2
+00:00:06.000 --> 00:00:10.250
+Es importante que cada subtítulo tenga
+un identificador, un rango de tiempo
+y el texto a mostrar.
+
+3
+00:00:11.000 --> 00:00:15.000
+Y recuerda, los archivos .vtt
+son la forma estándar de hacerlo en la web.
